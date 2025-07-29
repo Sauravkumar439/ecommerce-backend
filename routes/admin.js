@@ -40,7 +40,8 @@ router.put("/orders/:id/confirm", adminMiddleware, async (req, res) => {
 // ✅ GET /api/admin/stats - Get dashboard summary stats (admin only)
 router.get("/stats", adminMiddleware, async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
+    // ✅ Only count users who are not admins
+    const totalUsers = await User.countDocuments({ isAdmin: false });
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
 
