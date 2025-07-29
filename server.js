@@ -5,16 +5,26 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ CORS Setup for Local + Netlify
+// ✅ Fixed: Correct allowedOrigins without trailing slash
 const allowedOrigins = [
-  "http://localhost:5173", // Vite local
-  "https://e-commerceai.netlify.app/", // 🔁 Replace with actual Netlify URL
+  "http://localhost:5173",
+  "https://e-commerceai.netlify.app", // ❌ no trailing slash
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+// ✅ Updated CORS Middleware
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (e.g. Postman) or allowed origins
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // ✅ Middleware
 app.use(express.json());
